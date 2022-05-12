@@ -4,9 +4,6 @@ import { useAuth } from "../../components/Context/AuthContext";
 function Lobby() {
   const { sessionUser, logOut, useSweetAlert } = useAuth();
 
-  //   const updateAdmin = async () => {
-  //     await updateUser();
-  //   };
   const handleLogOut = async () => {
     try {
       await logOut();
@@ -15,11 +12,6 @@ function Lobby() {
     }
   };
 
-  //   useEffect(() => {
-  //     if (sessionUser.displayName === null) {
-  //       updateAdmin();
-  //     }
-  //   }, []);
   return (
     <div>
       <h1>Bienvenido:{sessionUser.email}</h1>

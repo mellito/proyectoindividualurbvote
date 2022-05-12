@@ -7,6 +7,7 @@ import {
   GoogleAuthProvider,
   signInWithPopup,
   updateProfile,
+  sendPasswordResetEmail,
 } from "firebase/auth";
 import PropTypes from "prop-types";
 import Swal from "sweetalert2";
@@ -75,6 +76,13 @@ export function AuthProvider({ children }) {
     }
   };
 
+  const resetPassword = async (email) => {
+    try {
+      return await sendPasswordResetEmail(auth, email);
+    } catch (error) {
+      return useSweetAlert("Fibase error", error.message, "error");
+    }
+  };
   const data = useMemo(() => ({
     signup,
     login,
@@ -84,6 +92,7 @@ export function AuthProvider({ children }) {
     useSweetAlert,
     googleLogin,
     updateUser,
+    resetPassword,
   }));
   return <authContext.Provider value={data}>{children}</authContext.Provider>;
 }
