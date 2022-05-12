@@ -4,6 +4,9 @@ import {
   signInWithEmailAndPassword,
   onAuthStateChanged,
   signOut,
+  GoogleAuthProvider,
+  signInWithPopup,
+  updateProfile,
 } from "firebase/auth";
 import PropTypes from "prop-types";
 import Swal from "sweetalert2";
@@ -21,12 +24,12 @@ export const useAuth = () => {
 };
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
+  const [sessionUser, setSessionUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const MySwal = withReactContent(Swal);
   useEffect(() => {
     onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
+      setSessionUser(currentUser);
       setLoading(false);
     });
   }, []);
@@ -44,16 +47,43 @@ export function AuthProvider({ children }) {
   };
 
   const logOut = async () => {
-    await signOut(auth);
+    try {
+      return await signOut(auth);
+    } catch (error) {
+      return useSweetAlert("Fibase error", error.message, "error");
+    }
+  };
+
+  const googleLogin = async () => {
+    try {
+      const googleProvider = new GoogleAuthProvider();
+      return await signInWithPopup(auth, googleProvider);
+    } catch (error) {
+      return useSweetAlert("Fibase error", error.message, "error");
+    }
+  };
+
+  const updateUser = async () => {
+    try {
+      return await updateProfile(auth.currentUser, {
+        displayName: "ADMIN",
+        photoURL:
+          "https://thumbs.dreamstime.com/z/inicio-de-sesi%C3%B3n-administrador-en-el-icono-del-port%C3%A1til-vector-stock-166205404.jpg",
+      });
+    } catch (error) {
+      return useSweetAlert("Fibase error", error.message, "error");
+    }
   };
 
   const data = useMemo(() => ({
     signup,
     login,
-    user,
+    sessionUser,
     logOut,
     loading,
     useSweetAlert,
+    googleLogin,
+    updateUser,
   }));
   return <authContext.Provider value={data}>{children}</authContext.Provider>;
 }

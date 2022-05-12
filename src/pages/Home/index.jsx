@@ -1,16 +1,17 @@
 import { useState } from "react";
 import { FcGoogle } from "react-icons/fc";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../components/Context/AuthContext";
 import TemplateBase from "../../components/TemplateBase";
-import { REGISTER_ROUTE } from "../../components/Constans/Routes";
+import { REGISTER_ROUTE, LOBBY_ROUTE } from "../../components/Constans/Routes";
 
 function Home() {
   const [user, setUser] = useState({
     email: "",
     password: "",
   });
-  const { login, useSweetAlert } = useAuth();
+  const { login, useSweetAlert, googleLogin } = useAuth();
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -19,9 +20,41 @@ function Home() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      if (!user.email || !user.password) {
+        return useSweetAlert(
+          "Validacion de campos",
+          "los campos no pueden estar vacios",
+          "error",
+        );
+      }
+
       await login(user.email, user.password);
+      useSweetAlert(
+        "Validacion correcta",
+        "login correcto bienvenido",
+        "success",
+      );
+      setUser({
+        email: "",
+        password: "",
+      });
+      return navigate(LOBBY_ROUTE);
     } catch (error) {
-      useSweetAlert("error con firebase", error.message, "error");
+      return useSweetAlert("error con firebase", error.message, "error");
+    }
+  };
+
+  const handleLogin = async () => {
+    try {
+      await googleLogin();
+      useSweetAlert(
+        "Validacion correcta",
+        "login correcto bienvenido",
+        "success",
+      );
+      navigate(LOBBY_ROUTE);
+    } catch (error) {
+      useSweetAlert("Error Google", error.message, "error");
     }
   };
   return (
@@ -31,19 +64,20 @@ function Home() {
         <p className="first-letter:uppercase text-gray-700 font-semibold  mb-8">
           unete disfruta de nuestro sistema
         </p>
-        <a
-          href="#!"
-          className="text-center border-2 border-gray-400 rounded-3xl p-2 block mb-4"
+        <button
+          type="button"
+          className="text-center border-2 border-gray-400 rounded-3xl p-2 block mb-4 hover:bg-gray-200 w-full"
+          onClick={handleLogin}
         >
-          <FcGoogle className="inline" />
-          <span className="ml-1"> Iniciar sesión con google</span>
-        </a>
+          <FcGoogle className="inline text-xl" />
+          <span className="ml-1 font-bold"> Iniciar sesión con google</span>
+        </button>
         {/* eslint-disable-next-line no-octal-escape */}
         <p className="before:content-['---------------------------'] after:content-['---------------------------'] text-sm text-gray-600 mb-4">
           O inicia sesión con correo
         </p>
         <form onSubmit={handleSubmit}>
-          <label htmlFor="email">
+          <label htmlFor="email" className="font-bold">
             Correo *
             <input
               className="text-center border-2 border-gray-400 rounded-3xl p-2 block mb-4 w-full bg-inherit"
@@ -54,7 +88,7 @@ function Home() {
             />
           </label>
 
-          <label htmlFor="password">
+          <label htmlFor="password" className="font-bold">
             Contrasena *
             <input
               className="text-center border-2 border-gray-400 rounded-3xl p-2 block mb-4 w-full bg-inherit"
@@ -68,7 +102,7 @@ function Home() {
 
           <button
             type="submit"
-            className="text-center bg-blue-900  rounded-3xl p-2 block mb-4 w-full text-white capitalize "
+            className="text-center bg-blue-900  rounded-3xl p-2 block mb-4 w-full text-white capitalize hover:bg-blue-700 "
           >
             Iniciar sesión
           </button>
