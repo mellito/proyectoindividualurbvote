@@ -3,7 +3,12 @@ import { FcGoogle } from "react-icons/fc";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../components/Context/AuthContext";
 import TemplateBase from "../../components/TemplateBase";
-import { REGISTER_ROUTE, LOBBY_ROUTE } from "../../components/Constans/Routes";
+import {
+  REGISTER_ROUTE,
+  LOBBY_ROUTE,
+  RECOVERY_ROUTE,
+} from "../../components/Constans/Routes";
+import RedirecTemplate from "../../components/RedirecTemplate";
 
 function Home() {
   const [user, setUser] = useState({
@@ -12,7 +17,6 @@ function Home() {
   });
   const { login, useSweetAlert, googleLogin } = useAuth();
   const navigate = useNavigate();
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setUser({ ...user, [name]: value });
@@ -109,21 +113,17 @@ function Home() {
         </form>
 
         <Link
-          to="#!"
+          to={RECOVERY_ROUTE}
           className="block text-sm text-blue-900 font-semibold mb-4"
         >
           olvidaste la contrasena?
         </Link>
 
-        <div className="text-sm">
-          <span className="font-semibold"> No te has registrado? </span>
-          <Link
-            to={REGISTER_ROUTE}
-            className="text-sm text-blue-900 font-semibold mb-4"
-          >
-            Crear una cuenta
-          </Link>
-        </div>
+        <RedirecTemplate
+          nameLink="Crear una cuenta"
+          nameContent="No te has registrado?"
+          goLink={REGISTER_ROUTE}
+        />
       </article>
     </TemplateBase>
   );

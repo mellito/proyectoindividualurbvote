@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../components/Context/AuthContext";
 import TemplateBase from "../../components/TemplateBase";
 import { HOME_ROUTE } from "../../components/Constans/Routes";
+import RedirecTemplate from "../../components/RedirecTemplate";
 
 function Register() {
   const [user, setUser] = useState({
@@ -104,15 +105,11 @@ function Register() {
             Registrate
           </button>
         </form>
-        <div className="text-sm">
-          <span className="font-semibold"> Ya tienes una cuenta? </span>
-          <Link
-            to={HOME_ROUTE}
-            className="text-sm text-blue-900 font-semibold mb-4"
-          >
-            Iniciar sesión
-          </Link>
-        </div>
+        <RedirecTemplate
+          nameLink="Iniciar sesión"
+          nameContent="Ya tienes una cuenta?"
+          goLink={HOME_ROUTE}
+        />
       </article>
     </TemplateBase>
   );
