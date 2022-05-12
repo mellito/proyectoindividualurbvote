@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { FcGoogle } from "react-icons/fc";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../components/Context/AuthContext";
 import TemplateBase from "../../components/TemplateBase";
 import { HOME_ROUTE } from "../../components/Constans/Routes";
@@ -10,7 +9,8 @@ function Register() {
     email: "",
     password: "",
   });
-  const { signup, useSweetAlert } = useAuth();
+  const { signup, useSweetAlert, updateUser } = useAuth();
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -19,17 +19,35 @@ function Register() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      if (!user.password || !user.confirmpassword || !user.email) {
+        return useSweetAlert(
+          "Validacion de campos",
+          "Ningun campo puede estar vacio",
+          "error",
+        );
+      }
       if (user.password !== user.confirmpassword) {
-        useSweetAlert(
+        return useSweetAlert(
           "error con contrasena",
           "contrasena no son iguales",
           "error",
         );
-      } else {
-        await signup(user.email, user.password);
       }
+      await signup(user.email, user.password);
+      await updateUser();
+      useSweetAlert(
+        "Login exitoso",
+        "Bienvenido esperamos que tengas una buena experiencia",
+        "success",
+      );
+
+      setUser({
+        email: "",
+        password: "",
+      });
+      return navigate(HOME_ROUTE);
     } catch (error) {
-      useSweetAlert("error con firebase", error.message, "error");
+      return useSweetAlert("error con firebase", error.message, "error");
     }
   };
   return (
@@ -39,19 +57,12 @@ function Register() {
         <p className="first-letter:uppercase text-gray-700 font-semibold  mb-8">
           unete disfruta de nuestro sistema
         </p>
-        <a
-          href="#!"
-          className="text-center border-2 border-gray-400 rounded-3xl p-2 block mb-4"
-        >
-          <FcGoogle className="inline" />
-          <span className="ml-1"> Registrate con google</span>
-        </a>
-        {/* eslint-disable-next-line no-octal-escape */}
+
         <p className="before:content-['---------------------------'] after:content-['---------------------------'] text-sm text-gray-600 mb-4">
-          O registrate con correo
+          Registrate con correo
         </p>
         <form onSubmit={handleSubmit} className="mb-8">
-          <label htmlFor="email">
+          <label htmlFor="email" className="font-bold">
             Correo *
             <input
               className="text-center border-2 border-gray-400 rounded-3xl p-2 block mb-4 w-full bg-inherit"
@@ -62,7 +73,7 @@ function Register() {
             />
           </label>
 
-          <label htmlFor="password">
+          <label htmlFor="password" className="font-bold">
             Contrasena *
             <input
               className="text-center border-2 border-gray-400 rounded-3xl p-2 block mb-4 w-full bg-inherit"
@@ -74,7 +85,7 @@ function Register() {
             />
           </label>
 
-          <label htmlFor="confirmpassword">
+          <label htmlFor="confirmpassword" className="font-bold">
             Confirmar contrasena *
             <input
               className="text-center border-2 border-gray-400 rounded-3xl p-2 block mb-4 w-full bg-inherit"
@@ -88,7 +99,7 @@ function Register() {
 
           <button
             type="submit"
-            className="text-center bg-blue-900  rounded-3xl p-2 block mb-4 w-full text-white capitalize "
+            className="text-center bg-blue-900  rounded-3xl p-2 block mb-4 w-full text-white capitalize hover:bg-blue-700 "
           >
             Registrate
           </button>
