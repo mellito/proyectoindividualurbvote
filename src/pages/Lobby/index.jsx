@@ -1,9 +1,12 @@
-// import { useEffect } from "react";
+import { useEffect } from "react";
 import { useAuth } from "../../components/Context/AuthContext";
 
 function Lobby() {
-  const { sessionUser, logOut, useSweetAlert } = useAuth();
-
+  const { sessionUser, logOut, useSweetAlert, createCollectionUser } =
+    useAuth();
+  useEffect(() => {
+    createCollectionUser();
+  }, []);
   const handleLogOut = async () => {
     try {
       await logOut();

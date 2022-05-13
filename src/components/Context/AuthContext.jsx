@@ -9,10 +9,11 @@ import {
   updateProfile,
   sendPasswordResetEmail,
 } from "firebase/auth";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 import PropTypes from "prop-types";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
-import { auth } from "../../utils/firebase/firebaseconfig";
+import { auth, fireStore } from "../../utils/firebase/firebaseconfig";
 
 const authContext = createContext();
 
@@ -83,6 +84,16 @@ export function AuthProvider({ children }) {
       return useSweetAlert("Fibase error", error.message, "error");
     }
   };
+
+  const createCollectionUser = async () => {
+    const docRef = doc(fireStore, `users/${sessionUser.email}`);
+    const consult = await getDoc(docRef);
+
+    if (!consult.exists()) {
+      await setDoc(docRef, { prueba: "soy una prueba 2" });
+    }
+  };
+
   const data = useMemo(() => ({
     signup,
     login,
@@ -93,6 +104,7 @@ export function AuthProvider({ children }) {
     googleLogin,
     updateUser,
     resetPassword,
+    createCollectionUser,
   }));
   return <authContext.Provider value={data}>{children}</authContext.Provider>;
 }
