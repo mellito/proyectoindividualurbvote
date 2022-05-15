@@ -4,12 +4,16 @@ import {
   REGISTER_ROUTE,
   LOBBY_ROUTE,
   RECOVERY_ROUTE,
+  CREATE_RESIDENCE,
+  RESIDENCE,
 } from "../Constans/Routes";
 import Home from "../../pages/Home";
 import Register from "../../pages/Register";
 import Recovery from "../../pages/Recovery";
 import Lobby from "../../pages/Lobby";
 import ProtectedRoute from "../ProtectedRoute";
+import NewResidence from "../../pages/NewResidence";
+import Residence from "../../pages/Residense";
 
 function MainRoute() {
   return (
@@ -24,6 +28,22 @@ function MainRoute() {
             element={
               <ProtectedRoute>
                 <Lobby />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path={CREATE_RESIDENCE}
+            element={
+              <ProtectedRoute>
+                <NewResidence />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path={`${RESIDENCE}/:id`}
+            element={
+              <ProtectedRoute>
+                <Residence />
               </ProtectedRoute>
             }
           />

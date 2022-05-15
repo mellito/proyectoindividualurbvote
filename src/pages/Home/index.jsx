@@ -17,6 +17,7 @@ function Home() {
   });
   const { login, useSweetAlert, googleLogin } = useAuth();
   const navigate = useNavigate();
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setUser({ ...user, [name]: value });
@@ -61,6 +62,7 @@ function Home() {
       useSweetAlert("Error Google", error.message, "error");
     }
   };
+
   return (
     <TemplateBase>
       <article className="w-96 h-auto bg-inherit text-center ">
