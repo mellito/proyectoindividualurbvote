@@ -17,19 +17,23 @@ function Lobby() {
   return (
     <div className="flex ">
       <SideBarNavegation />
-      <div className="h-screen w-full flex justify-center items-center">
-        <h1>UNIDADES RESIDENCIALES</h1>
 
-        {listUrbData ? (
-          listUrbData.map((list) => (
-            <UrbanizationCard
-              urbanizationData={list}
-              key={list.identification}
-            />
-          ))
-        ) : (
-          <h1>Cargando</h1>
-        )}
+      <div className="h-screen w-full flex flex-col items-center overflow-scroll">
+        <h1 className="text-3xl font-semibold mb-4 mt-4">
+          UNIDADES RESIDENCIALES
+        </h1>
+        <div className="grid grid-cols-4 p-6 gap-6 ">
+          {listUrbData ? (
+            listUrbData.map((list) => (
+              <UrbanizationCard
+                urbanizationData={list}
+                key={list.identification}
+              />
+            ))
+          ) : (
+            <h1>Cargando</h1>
+          )}
+        </div>
       </div>
     </div>
   );

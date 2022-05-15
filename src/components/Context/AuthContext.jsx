@@ -101,8 +101,9 @@ export function AuthProvider({ children }) {
   };
 
   const fileHandler = async (e, urbanizationName) => {
+    console.log(e);
     try {
-      const localFile = e.files[0];
+      const localFile = e.target.files[0];
       const fileRef = ref(storage, `${urbanizationName}/${localFile.name}`);
       await uploadBytes(fileRef, localFile);
       const urlDown = await getDownloadURL(fileRef);

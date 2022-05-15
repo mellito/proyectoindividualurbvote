@@ -4,24 +4,28 @@ import { useAuth } from "../../components/Context/AuthContext";
 
 function NewResidence() {
   const { useSweetAlert, fileHandler, createUrbanization } = useAuth();
-  const [urbanizationData, setUrbanizationData] = useState([]);
-  const [storagePhoto, setStoragePhoto] = useState("");
+  const [urbanizationData, setUrbanizationData] = useState({
+    uniName: "",
+    address: "",
+    identification: "",
+    email: "",
+    phone: "",
+    photo: "",
+  });
 
-  const uploadPhoto = async () => {
-    const photo = await fileHandler(
-      urbanizationData.photo,
-      urbanizationData.uniName,
-    );
-    setStoragePhoto(photo);
-  };
+  const [storagePhotoEvent, setStoragePhotoEvent] = useState();
+
   const handleChange = (e) => {
+    if (e.target.name === "photo") {
+      setStoragePhotoEvent(e);
+    }
     const { name, value } = e.target;
     setUrbanizationData({ ...urbanizationData, [name]: value });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    uploadPhoto();
+
     if (
       !urbanizationData.uniName ||
       !urbanizationData.address ||
@@ -30,7 +34,7 @@ function NewResidence() {
       !urbanizationData.phone ||
       !urbanizationData.photo
     ) {
-      useSweetAlert(
+      return useSweetAlert(
         "Validacion de datos ",
         "ningundo de los datos puede estar vacio",
         "error",
@@ -38,19 +42,30 @@ function NewResidence() {
     }
 
     try {
-      const newUrbanization = { ...urbanizationData, photo: storagePhoto };
+      const photo = await fileHandler(
+        storagePhotoEvent,
+        urbanizationData.uniName,
+      );
+      const newUrbanization = { ...urbanizationData, photo };
+      setUrbanizationData({
+        uniName: "",
+        address: "",
+        identification: "",
+        email: "",
+        phone: "",
+        photo: "",
+      });
       createUrbanization(newUrbanization);
-      setUrbanizationData([]);
-      useSweetAlert(
+      return useSweetAlert(
         "Creada",
         `urbanzacion ${newUrbanization.uniName} creada exitosamente`,
         "success",
       );
     } catch (error) {
-      useSweetAlert("Error Google", error.message, "error");
+      setUrbanizationData({});
+      return useSweetAlert("Error Google", error.message, "error");
     }
   };
-
   return (
     <div className="flex">
       <SideBarNavegation />
