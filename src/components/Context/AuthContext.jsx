@@ -9,12 +9,10 @@ import {
   updateProfile,
   sendPasswordResetEmail,
 } from "firebase/auth";
-import { doc, setDoc, collection, getDocs } from "firebase/firestore";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import PropTypes from "prop-types";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
-import { auth, fireStore, storage } from "../../utils/firebase/firebaseconfig";
+import { auth } from "../../utils/firebase/firebaseconfig";
 
 const authContext = createContext();
 
@@ -29,7 +27,6 @@ export const useAuth = () => {
 export function AuthProvider({ children }) {
   const [sessionUser, setSessionUser] = useState(null);
   const [loading, setLoading] = useState(true);
-
   const MySwal = withReactContent(Swal);
   useEffect(() => {
     onAuthStateChanged(auth, (currentUser) => {
@@ -86,42 +83,6 @@ export function AuthProvider({ children }) {
       return useSweetAlert("Fibase error", error.message, "error");
     }
   };
-
-  const createUrbanization = async (data) => {
-    try {
-      const docRef = doc(
-        fireStore,
-        `${sessionUser.email}`,
-        `${data.identification}`,
-      );
-      return await setDoc(docRef, data);
-    } catch (error) {
-      return useSweetAlert("Fibase error", error.message, "error");
-    }
-  };
-
-  const fileHandler = async (e, urbanizationName) => {
-    console.log(e);
-    try {
-      const localFile = e.target.files[0];
-      const fileRef = ref(storage, `${urbanizationName}/${localFile.name}`);
-      await uploadBytes(fileRef, localFile);
-      const urlDown = await getDownloadURL(fileRef);
-      return urlDown;
-    } catch (error) {
-      return useSweetAlert("Fibase error", error.message, "error");
-    }
-  };
-
-  const getAllUrbanization = async () => {
-    const docRef = await getDocs(collection(fireStore, `${sessionUser.email}`));
-    let infor = [];
-    docRef.forEach((docInf) => {
-      infor = [...infor, docInf.data()];
-    });
-    return infor;
-  };
-
   const data = useMemo(() => ({
     signup,
     login,
@@ -132,9 +93,6 @@ export function AuthProvider({ children }) {
     googleLogin,
     updateUser,
     resetPassword,
-    createUrbanization,
-    fileHandler,
-    getAllUrbanization,
   }));
   return <authContext.Provider value={data}>{children}</authContext.Provider>;
 }
