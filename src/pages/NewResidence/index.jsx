@@ -46,7 +46,7 @@ function NewResidence() {
         storagePhotoEvent,
         urbanizationData.uniName,
       );
-      const newUrbanization = { ...urbanizationData, photo };
+      const newUrbanization = { ...urbanizationData, photo, house: [] };
       setUrbanizationData({
         uniName: "",
         address: "",

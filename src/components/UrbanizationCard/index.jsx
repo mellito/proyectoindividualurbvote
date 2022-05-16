@@ -6,12 +6,9 @@ function UrbanizationCard({ urbanizationData }) {
   const { photo, email, address, uniName, identification } = urbanizationData;
 
   return (
-    <Link
-      to={`${RESIDENCE}/${identification}`}
-      className="border-2 border-black"
-    >
+    <Link to={`${RESIDENCE}/${identification}`}>
       <div>
-        <img src={photo} alt={uniName} className="w-full h-40 object-fill" />
+        <img src={photo} alt={uniName} className="w-72 h-60 object-fill" />
         <section className="px-1">
           <p> {uniName}</p>
           <p> {email}</p>
