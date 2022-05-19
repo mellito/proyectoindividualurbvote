@@ -3,26 +3,41 @@ import { useParams } from "react-router-dom";
 import SideBarNavegation from "../../components/SideBarNavegation";
 import { useAuth } from "../../components/Context/AuthContext";
 import UrbanizationCard from "../../components/UrbanizationCard";
+import CardResidence from "../../components/CardResidence";
 
 function Residence() {
   const [infoResidence, setInfoResidence] = useState();
+  const [houseArray, setHouseArray] = useState();
   const [houseData, sethouseData] = useState({
     cc: "",
     name: "",
     housenumber: "",
     phone: "",
     votacion: false,
+    password: "",
   });
-  const { geOnetUrbanization, addHouse, useSweetAlert } = useAuth();
+  const [voteCode, setVoteCode] = useState("");
+  const {
+    geOnetUrbanization,
+    addHouse,
+    useSweetAlert,
+    realtimeCollectionCheck,
+    createVote,
+  } = useAuth();
   const id = useParams();
   const oneResidence = async () => {
-    const result = await geOnetUrbanization(id);
-    setInfoResidence(result);
+    setInfoResidence(await geOnetUrbanization(id));
+    await realtimeCollectionCheck(id, setHouseArray);
+    if (localStorage.code) {
+      setVoteCode(localStorage.getItem("code"));
+    }
   };
 
   useEffect(() => {
     oneResidence();
   }, []);
+
+  useEffect(() => {}, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -50,19 +65,53 @@ function Residence() {
       name: "",
       housenumber: "",
       phone: "",
+      votacion: false,
+      password: "",
     });
     return useSweetAlert(
-      "Exitodso",
+      "Exitoso",
       `casa ${houseData.housenumber} creada`,
       "success",
     );
   };
 
+  const createVoteLink = () => {
+    try {
+      const objectToArrayHouse = Object.values(houseArray.house);
+      const filterHouseArray = objectToArrayHouse.filter(
+        (house) => house.votacion === true,
+      );
+      const resultCode = [];
+      const characters =
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+      for (let i = 0; i < 5; i += 1) {
+        resultCode.push(
+          characters.charAt(Math.floor(Math.random() * characters.length)),
+        );
+      }
+      if (!localStorage.code) {
+        localStorage.setItem("code", resultCode.join(""));
+        setVoteCode(localStorage.getItem("code"));
+        createVote(
+          { houseactive: filterHouseArray },
+          resultCode.join(""),
+          id.id,
+        );
+      }
+    } catch (error) {
+      useSweetAlert("error", error.message, "error");
+    }
+  };
+
+  const endVote = () => {
+    localStorage.removeItem("code");
+    setVoteCode("");
+  };
   return (
     <div className="flex gap-1 ">
       <SideBarNavegation />
-      <section className="h-screen w-full  overflow-scroll">
-        <div className="w-60 h-screen flex flex-col justify-evenly">
+      <section className="h-screen  flex  justify-evenly items-center ">
+        <div className="w-full h-screen flex flex-col justify-evenly items-center">
           {infoResidence && (
             <UrbanizationCard urbanizationData={infoResidence} />
           )}
@@ -108,7 +157,7 @@ function Residence() {
                 <label htmlFor="password" className="font-bold">
                   celular propietario *
                   <input
-                    className="text-center border-2 border-gray-400 rounded-3xl  block  w-full bg-inherit  mb-4"
+                    className="text-center border-2 border-gray-400 rounded-3xl  block  w-full bg-inherit  "
                     type="number"
                     name="phone"
                     placeholder="0000000"
@@ -116,17 +165,85 @@ function Residence() {
                     onChange={handleChange}
                   />
                 </label>
+
+                <label htmlFor="password" className="font-bold">
+                  contrasena *
+                  <input
+                    className="text-center border-2 border-gray-400 rounded-3xl  block  w-full bg-inherit  mb-4"
+                    type="text"
+                    name="password"
+                    placeholder="contrasena"
+                    value={houseData.password}
+                    onChange={handleChange}
+                  />
+                </label>
               </section>
 
               <button
                 type="submit"
-                className="text-center bg-blue-900  rounded-3xl p-1 block mb-4 w-full text-white capitalize hover:bg-blue-700"
+                className="text-center bg-blue-900  rounded-3xl p-1  mb-4 w-full text-white capitalize hover:bg-blue-700"
               >
                 crear
               </button>
             </form>
           </article>
         </div>
+      </section>
+      <div className="h-screen overflow-y-scroll p-4">
+        <h1 className="uppercase font-bold mb-4 text-center">
+          casas registradas
+        </h1>
+        <section className="grid grid-cols-2 gap-2 mb-4">
+          {houseArray &&
+            Object.values(houseArray.house).map((house) => (
+              <CardResidence house={house} />
+            ))}
+        </section>
+        {voteCode && (
+          <>
+            <p className="text-center mb-2 font-bold uppercase">
+              {" "}
+              votacion iniciada
+            </p>
+            <h3 className="text-center mb-2 font-bold">
+              <p>https://urbvote.vercel.app/vote/</p>
+              <p>codigo: {voteCode}</p>
+            </h3>
+          </>
+        )}
+        <button
+          type="button"
+          className={
+            !voteCode
+              ? "text-center bg-blue-900  rounded-3xl p-1 mb-4 w-full text-white capitalize hover:bg-blue-700"
+              : "text-center bg-gray-700  rounded-3xl p-1 mb-4 w-full text-white capitalize "
+          }
+          onClick={createVoteLink}
+          disabled={!!voteCode}
+        >
+          iniciar votacion
+        </button>
+        <button
+          type="button"
+          className={
+            voteCode
+              ? "text-center bg-red-900  rounded-3xl p-1 mb-4 w-full text-white capitalize hover:bg-red-700"
+              : "text-center bg-gray-700  rounded-3xl p-1 mb-4 w-full text-white capitalize "
+          }
+          onClick={endVote}
+          disabled={!voteCode}
+        >
+          terminar votacion
+        </button>
+      </div>
+      <section className="font-bold">
+        <article>
+          <p className="uppercase">Pregunta actual</p>
+          {voteCode ? <p>Pregunta actual</p> : <p>votacion no iniciada</p>}
+        </article>
+        <article>
+          <p className="uppercase">Resultado</p>
+        </article>
       </section>
     </div>
   );

@@ -16,7 +16,7 @@ import {
   getDocs,
   getDoc,
   updateDoc,
-  arrayUnion,
+  onSnapshot,
 } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import PropTypes from "prop-types";
@@ -141,11 +141,49 @@ export function AuthProvider({ children }) {
   };
 
   const addHouse = async (id, data) => {
+    const { housenumber } = data;
     try {
       const docRef = doc(fireStore, sessionUser.email, id.id);
-      await updateDoc(docRef, { house: arrayUnion(data) });
+      const docSnap = await getDoc(docRef);
+      const { house } = docSnap.data();
+      await updateDoc(docRef, { house: { ...house, [housenumber]: data } });
     } catch (error) {
       useSweetAlert("Fibase error", error.message, "error");
+    }
+  };
+
+  const realtimeCollectionCheck = async (id, setHouse) => {
+    try {
+      onSnapshot(doc(fireStore, sessionUser.email, id.id), (house) => {
+        setHouse(house.data());
+      });
+    } catch (error) {
+      useSweetAlert("Fibase error", error.message, "error");
+    }
+  };
+  const updateActiveHouse = async (id, houseNumber) => {
+    try {
+      const docRef = doc(fireStore, sessionUser.email, id);
+      const docSnap = await getDoc(docRef);
+      const { house } = docSnap.data();
+      const { votacion } = house[houseNumber];
+      await updateDoc(docRef, {
+        house: {
+          ...house,
+          [houseNumber]: { ...house[houseNumber], votacion: !votacion },
+        },
+      });
+    } catch (error) {
+      useSweetAlert("Fibase error", error.message, "error");
+    }
+  };
+
+  const createVote = async (initialData, codevote, id) => {
+    try {
+      const docRef = doc(fireStore, sessionUser.email, id, "vote", codevote);
+      return await setDoc(docRef, initialData);
+    } catch (error) {
+      return useSweetAlert("Fibase error", error.message, "error");
     }
   };
 
@@ -164,6 +202,9 @@ export function AuthProvider({ children }) {
     getAllUrbanization,
     geOnetUrbanization,
     addHouse,
+    realtimeCollectionCheck,
+    createVote,
+    updateActiveHouse,
   }));
   return <authContext.Provider value={data}>{children}</authContext.Provider>;
 }
