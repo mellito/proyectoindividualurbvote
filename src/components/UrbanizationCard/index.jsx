@@ -3,19 +3,16 @@ import { Link } from "react-router-dom";
 import { RESIDENCE } from "../Constans/Routes";
 
 function UrbanizationCard({ urbanizationData }) {
-  const { photo, email, address, uniName, identification } = urbanizationData;
+  const { photo, email, uniName, identification, phone } = urbanizationData;
 
   return (
-    <Link
-      to={`${RESIDENCE}/${identification}`}
-      className="border-2 border-black"
-    >
-      <div>
-        <img src={photo} alt={uniName} className="w-full h-40 object-fill" />
+    <Link to={`${RESIDENCE}/${identification}`}>
+      <div className="text-center">
+        <p> {uniName}</p>
+        <img src={photo} alt={uniName} className="w-72 h-60 object-fill" />
         <section className="px-1">
-          <p> {uniName}</p>
-          <p> {email}</p>
-          <p> {address}</p>
+          <p>Correo: {email}</p>
+          <p>Telefono: {phone}</p>
         </section>
       </div>
     </Link>
@@ -25,16 +22,16 @@ function UrbanizationCard({ urbanizationData }) {
 UrbanizationCard.defaultProps = {
   photo: "",
   email: "",
-  address: "",
   uniName: "",
+  phone: "",
 };
 
 UrbanizationCard.propTypes = {
   urbanizationData: PropTypes.objectOf(PropTypes.string).isRequired,
   photo: PropTypes.string,
   email: PropTypes.string,
-  address: PropTypes.string,
   uniName: PropTypes.string,
+  phone: PropTypes.string,
 };
 
 export default UrbanizationCard;

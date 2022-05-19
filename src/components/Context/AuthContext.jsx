@@ -9,7 +9,15 @@ import {
   updateProfile,
   sendPasswordResetEmail,
 } from "firebase/auth";
-import { doc, setDoc, collection, getDocs } from "firebase/firestore";
+import {
+  doc,
+  setDoc,
+  collection,
+  getDocs,
+  getDoc,
+  updateDoc,
+  onSnapshot,
+} from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import PropTypes from "prop-types";
 import Swal from "sweetalert2";
@@ -89,11 +97,7 @@ export function AuthProvider({ children }) {
 
   const createUrbanization = async (data) => {
     try {
-      const docRef = doc(
-        fireStore,
-        `${sessionUser.email}`,
-        `${data.identification}`,
-      );
+      const docRef = doc(fireStore, sessionUser.email, data.identification);
       return await setDoc(docRef, data);
     } catch (error) {
       return useSweetAlert("Fibase error", error.message, "error");
@@ -101,7 +105,6 @@ export function AuthProvider({ children }) {
   };
 
   const fileHandler = async (e, urbanizationName) => {
-    console.log(e);
     try {
       const localFile = e.target.files[0];
       const fileRef = ref(storage, `${urbanizationName}/${localFile.name}`);
@@ -114,12 +117,74 @@ export function AuthProvider({ children }) {
   };
 
   const getAllUrbanization = async () => {
-    const docRef = await getDocs(collection(fireStore, `${sessionUser.email}`));
-    let infor = [];
-    docRef.forEach((docInf) => {
-      infor = [...infor, docInf.data()];
-    });
-    return infor;
+    try {
+      const docRef = await getDocs(collection(fireStore, sessionUser.email));
+      let infor = [];
+      docRef.forEach((docInf) => {
+        infor = [...infor, docInf.data()];
+      });
+      return infor;
+    } catch (error) {
+      return useSweetAlert("Fibase error", error.message, "error");
+    }
+  };
+
+  const geOnetUrbanization = async (id) => {
+    try {
+      const docRef = doc(fireStore, sessionUser.email, id.id);
+      const docVaidation = await getDoc(docRef);
+
+      return docVaidation.data();
+    } catch (error) {
+      return useSweetAlert("Fibase error", error.message, "error");
+    }
+  };
+
+  const addHouse = async (id, data) => {
+    const { housenumber } = data;
+    try {
+      const docRef = doc(fireStore, sessionUser.email, id.id);
+      const docSnap = await getDoc(docRef);
+      const { house } = docSnap.data();
+      await updateDoc(docRef, { house: { ...house, [housenumber]: data } });
+    } catch (error) {
+      useSweetAlert("Fibase error", error.message, "error");
+    }
+  };
+
+  const realtimeCollectionCheck = async (id, setHouse) => {
+    try {
+      onSnapshot(doc(fireStore, sessionUser.email, id.id), (house) => {
+        setHouse(house.data());
+      });
+    } catch (error) {
+      useSweetAlert("Fibase error", error.message, "error");
+    }
+  };
+  const updateActiveHouse = async (id, houseNumber) => {
+    try {
+      const docRef = doc(fireStore, sessionUser.email, id);
+      const docSnap = await getDoc(docRef);
+      const { house } = docSnap.data();
+      const { votacion } = house[houseNumber];
+      await updateDoc(docRef, {
+        house: {
+          ...house,
+          [houseNumber]: { ...house[houseNumber], votacion: !votacion },
+        },
+      });
+    } catch (error) {
+      useSweetAlert("Fibase error", error.message, "error");
+    }
+  };
+
+  const createVote = async (initialData, codevote, id) => {
+    try {
+      const docRef = doc(fireStore, sessionUser.email, id, "vote", codevote);
+      return await setDoc(docRef, initialData);
+    } catch (error) {
+      return useSweetAlert("Fibase error", error.message, "error");
+    }
   };
 
   const data = useMemo(() => ({
@@ -135,6 +200,11 @@ export function AuthProvider({ children }) {
     createUrbanization,
     fileHandler,
     getAllUrbanization,
+    geOnetUrbanization,
+    addHouse,
+    realtimeCollectionCheck,
+    createVote,
+    updateActiveHouse,
   }));
   return <authContext.Provider value={data}>{children}</authContext.Provider>;
 }

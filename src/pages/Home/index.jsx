@@ -15,7 +15,7 @@ function Home() {
     email: "",
     password: "",
   });
-  const { login, useSweetAlert, googleLogin } = useAuth();
+  const { login, useSweetAlert, googleLogin, } = useAuth();
   const navigate = useNavigate();
 
   const handleChange = (e) => {
