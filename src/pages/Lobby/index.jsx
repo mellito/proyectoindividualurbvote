@@ -18,7 +18,7 @@ function Lobby() {
     <div className="flex ">
       <SideBarNavegation />
 
-      <div className="h-screen w-full flex flex-col items-center overflow-scroll">
+      <div className="h-screen w-full flex flex-col items-center overflow-x-auto">
         <h1 className="text-3xl font-semibold mb-4 mt-4">
           UNIDADES RESIDENCIALES
         </h1>

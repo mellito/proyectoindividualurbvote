@@ -154,13 +154,18 @@ export function AuthProvider({ children }) {
 
   const realtimeCollectionCheck = async (id, setHouse) => {
     try {
-      onSnapshot(doc(fireStore, sessionUser.email, id.id), (house) => {
-        setHouse(house.data());
-      });
+      const unsub = onSnapshot(
+        doc(fireStore, sessionUser.email, id.id),
+        (house) => {
+          setHouse(house.data());
+        },
+      );
+      return unsub;
     } catch (error) {
-      useSweetAlert("Fibase error", error.message, "error");
+      return useSweetAlert("Fibase error", error.message, "error");
     }
   };
+
   const updateActiveHouse = async (id, houseNumber) => {
     try {
       const docRef = doc(fireStore, sessionUser.email, id);
