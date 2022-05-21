@@ -6,6 +6,7 @@ import {
   RECOVERY_ROUTE,
   CREATE_RESIDENCE,
   RESIDENCE,
+  VOTE_LOBBY,
 } from "../Constans/Routes";
 import Home from "../../pages/Home";
 import Register from "../../pages/Register";
@@ -14,6 +15,7 @@ import Lobby from "../../pages/Lobby";
 import ProtectedRoute from "../ProtectedRoute";
 import NewResidence from "../../pages/NewResidence";
 import Residence from "../../pages/Residense";
+import VoteLobby from "../../pages/VoteLobby";
 
 function MainRoute() {
   return (
@@ -23,6 +25,7 @@ function MainRoute() {
           <Route path={HOME_ROUTE} element={<Home />} />
           <Route path={REGISTER_ROUTE} element={<Register />} />
           <Route path={RECOVERY_ROUTE} element={<Recovery />} />
+          <Route path={VOTE_LOBBY} element={<VoteLobby />} />
           <Route
             path={LOBBY_ROUTE}
             element={

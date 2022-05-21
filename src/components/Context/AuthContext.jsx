@@ -165,6 +165,16 @@ export function AuthProvider({ children }) {
       return useSweetAlert("Fibase error", error.message, "error");
     }
   };
+  const realtimeCollectionVote = async (setVoteCollection, code) => {
+    try {
+      const unsub = onSnapshot(doc(fireStore, "vote", code), (vote) => {
+        setVoteCollection(vote.data());
+      });
+      return unsub;
+    } catch (error) {
+      return useSweetAlert("Fibase error", error.message, "error");
+    }
+  };
 
   const updateActiveHouse = async (id, houseNumber) => {
     try {
@@ -183,12 +193,45 @@ export function AuthProvider({ children }) {
     }
   };
 
-  const createVote = async (initialData, codevote, id) => {
+  const createVote = async (initialData, codevote) => {
     try {
-      const docRef = doc(fireStore, sessionUser.email, id, "vote", codevote);
+      const docRef = doc(fireStore, "vote", codevote);
       return await setDoc(docRef, initialData);
     } catch (error) {
       return useSweetAlert("Fibase error", error.message, "error");
+    }
+  };
+
+  const addquestion = async (codevote, questionToAdd) => {
+    const docRef = doc(fireStore, "vote", codevote);
+    const docData = await getDoc(docRef);
+    const { questions } = docData.data();
+    const newQuestion = {
+      [Object.values(questions).length + 1]: {
+        questionToAdd,
+        yes: [],
+        not: [],
+        state: true,
+      },
+    };
+    updateDoc(docRef, { questions: { ...questions, ...newQuestion } });
+  };
+
+  const checkVoteHouse = async (code) => {
+    try {
+      const docRef = doc(fireStore, "vote", code);
+      const docData = await getDoc(docRef);
+      if (docData.exists()) {
+        const data = docData.data();
+        return data;
+      }
+      return useSweetAlert(
+        "error",
+        "codigo de votacion no encontrado",
+        "error",
+      );
+    } catch (error) {
+      return useSweetAlert("error", error.message, "error");
     }
   };
 
@@ -210,6 +253,9 @@ export function AuthProvider({ children }) {
     realtimeCollectionCheck,
     createVote,
     updateActiveHouse,
+    addquestion,
+    realtimeCollectionVote,
+    checkVoteHouse,
   }));
   return <authContext.Provider value={data}>{children}</authContext.Provider>;
 }

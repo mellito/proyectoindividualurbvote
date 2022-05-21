@@ -1,14 +1,17 @@
+/* eslint-disable no-unused-expressions */
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import SideBarNavegation from "../../components/SideBarNavegation";
 import { useAuth } from "../../components/Context/AuthContext";
 import UrbanizationCard from "../../components/UrbanizationCard";
 import CardResidence from "../../components/CardResidence";
+import ResultQuestion from "../../components/ResultQuestion";
 
 function Residence() {
   const [question, setQuestion] = useState("");
   const [infoResidence, setInfoResidence] = useState();
   const [houseArray, setHouseArray] = useState();
+  const [newQuestionStatus, setNewQuestionStatues] = useState(true);
   const [houseData, sethouseData] = useState({
     cc: "",
     name: "",
@@ -17,7 +20,7 @@ function Residence() {
     votacion: false,
     password: "",
   });
-
+  const [dataVote, setDataVote] = useState();
   const [voteCode, setVoteCode] = useState("");
   const {
     geOnetUrbanization,
@@ -25,6 +28,8 @@ function Residence() {
     useSweetAlert,
     realtimeCollectionCheck,
     createVote,
+    addquestion,
+    realtimeCollectionVote,
   } = useAuth();
   const id = useParams();
   const oneResidence = async () => {
@@ -39,7 +44,9 @@ function Residence() {
     oneResidence();
   }, []);
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    voteCode && realtimeCollectionVote(setDataVote, voteCode);
+  }, [voteCode]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -108,7 +115,7 @@ function Residence() {
         localStorage.setItem("code", resultCode.join(""));
         setVoteCode(localStorage.getItem("code"));
         createVote(
-          { houseVoteActive, questions: {} },
+          { houseVoteActive, questions: {}, idUrb: id.id },
           resultCode.join(""),
           id.id,
         );
@@ -119,20 +126,33 @@ function Residence() {
   };
 
   const endVote = () => {
+    if (!newQuestionStatus) {
+      return useSweetAlert(
+        "Error",
+        "no puedes termiar una votacion con una pregunta activa",
+        "error",
+      );
+    }
     localStorage.removeItem("code");
     setVoteCode("");
+    return null;
   };
 
   const handleSubmitQuestion = async (e) => {
     e.preventDefault();
-    const newQuestion = { 0: { question, yes: [], not: [], state: true } };
-    console.log(newQuestion);
+    await addquestion(voteCode, question);
+    setNewQuestionStatues(false);
+  };
+
+  const handleNewQuestion = () => {
+    setQuestion("");
+    setNewQuestionStatues(true);
   };
   return (
     <div className="flex gap-1  ">
       <SideBarNavegation />
-      <section className="h-screen grid grid-cols-3 ">
-        <div className=" h-screen flex flex-col justify-evenly items-center overflow-y-auto">
+      <section className="h-screen grid grid-cols-3 w-full ">
+        <div className=" h-full grid place-items-center overflow-y-auto">
           {infoResidence && (
             <UrbanizationCard urbanizationData={infoResidence} />
           )}
@@ -261,35 +281,54 @@ function Residence() {
             <p className="uppercase " />
             {voteCode ? (
               <form onSubmit={handleSubmitQuestion}>
-                <section className="flex flex-col justify-between item ">
-                  <label htmlFor="email" className="font-bold mb-2">
-                    PREGUNTA
-                    <input
-                      className="text-center border-2 border-gray-400 rounded-3xl  block  w-full bg-inherit"
-                      type="text"
-                      name="question"
-                      placeholder="crear pregunta "
-                      value={question}
-                      onChange={(e) => {
-                        setQuestion(e.target.value);
-                      }}
-                    />
-                  </label>
-                </section>
+                {!newQuestionStatus ? (
+                  <p className="uppercase text-2xl">{question}</p>
+                ) : (
+                  <>
+                    <section className="flex flex-col justify-between item ">
+                      <label htmlFor="email" className="font-bold mb-2">
+                        PREGUNTA
+                        <input
+                          className="text-center border-2 border-gray-400 rounded-3xl  block  w-full bg-inherit"
+                          type="text"
+                          name="question"
+                          placeholder="crear pregunta "
+                          value={question}
+                          onChange={(e) => {
+                            setQuestion(e.target.value);
+                          }}
+                        />
+                      </label>
+                    </section>
 
-                <button
-                  type="submit"
-                  className="text-center bg-blue-900  rounded-3xl p-1  mb-4 w-full text-white capitalize hover:bg-blue-700"
-                >
-                  crear pregunta
-                </button>
+                    <button
+                      type="submit"
+                      className="text-center bg-blue-900  rounded-3xl p-1  mb-4 w-full text-white capitalize hover:bg-blue-700"
+                    >
+                      crear pregunta
+                    </button>
+                  </>
+                )}
               </form>
             ) : (
               <p>votacion no iniciada</p>
             )}
           </article>
           <article>
-            <p className="uppercase">Resultado</p>
+            {!newQuestionStatus ? (
+              <>
+                <ResultQuestion dataVote={dataVote} />
+                <button
+                  type="button"
+                  className="text-center bg-red-900  rounded-3xl p-1 mb-4 w-full text-white capitalize hover:bg-red-700"
+                  onClick={handleNewQuestion}
+                >
+                  Finalizar pregunta
+                </button>
+              </>
+            ) : (
+              <p className="uppercase">esperando pregunta</p>
+            )}
           </article>
         </section>
       </section>
