@@ -1,7 +1,12 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import TemplateBase from "../../components/TemplateBase";
 import RedirecTemplate from "../../components/RedirecTemplate";
-import { REGISTER_ROUTE, HOME_ROUTE } from "../../components/Constans/Routes";
+import {
+  REGISTER_ROUTE,
+  HOME_ROUTE,
+  VOTE,
+} from "../../components/Constans/Routes";
 import { useAuth } from "../../components/Context/AuthContext";
 
 function VoteLobby() {
@@ -11,6 +16,7 @@ function VoteLobby() {
     code: "",
     password: "",
   });
+  const navigate = useNavigate();
   const handleChange = (e) => {
     const { name, value } = e.target;
     setUser({ ...user, [name]: value });
@@ -20,23 +26,27 @@ function VoteLobby() {
     try {
       e.preventDefault();
       const voteInformation = await checkVoteHouse(user.code);
-      const { houseVoteActive } = voteInformation;
+      if (voteInformation) {
+        const { houseVoteActive } = voteInformation;
 
-      if (!Object.keys(houseVoteActive).includes(user.house)) {
+        if (!Object.keys(houseVoteActive).includes(user.house)) {
+          return useSweetAlert(
+            "error",
+            "casa no esta registrada para votar",
+            "error",
+          );
+        }
+        if (!(houseVoteActive[user.house].password === user.password)) {
+          return useSweetAlert("error", "contrasena errada", "error");
+        }
+        navigate(`${VOTE}/${user.code}/${user.house}`);
         return useSweetAlert(
-          "error",
-          "casa no esta registrada para votar",
-          "error",
+          "bienvenido",
+          "login exitoso ya puedes votar",
+          "success",
         );
       }
-      if (!(houseVoteActive[user.house].password === user.password)) {
-        return useSweetAlert("error", "contrasena errada", "error");
-      }
-      return useSweetAlert(
-        "bienvenido",
-        "login exitoso ya puedes votar",
-        "success",
-      );
+      return null;
     } catch (error) {
       return useSweetAlert("error", error.message, "error");
     }

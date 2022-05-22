@@ -131,7 +131,7 @@ function Home() {
           to={VOTE_LOBBY}
           className="block  text-blue-900 font-semibold mt-4 text-3xl capitalize"
         >
-          votar aqui
+          vota aqui
         </Link>
       </article>
     </TemplateBase>

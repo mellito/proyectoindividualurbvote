@@ -115,7 +115,7 @@ function Residence() {
         localStorage.setItem("code", resultCode.join(""));
         setVoteCode(localStorage.getItem("code"));
         createVote(
-          { houseVoteActive, questions: {}, idUrb: id.id },
+          { houseVoteActive, questions: {}, idUrb: id.id, state: true },
           resultCode.join(""),
           id.id,
         );
