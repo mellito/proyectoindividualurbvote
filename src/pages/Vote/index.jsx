@@ -57,17 +57,21 @@ function Vote() {
                 <ResultQuestion dataVote={voteCollection} />
               )
             ) : (
-              <>Pregunta finalizada esperando nueva pregunta</>
+              <p className="text-2xl capitalize font-bold p-4">
+                Pregunta finalizada esperando nueva pregunta
+              </p>
             )}
           </div>
         ) : (
-          <section className="text-2xl capitalize mb-4">
-            pregunta sin creada, esperando nueva pregunta
+          <section className="text-2xl capitalize p-4">
+            esperando nueva pregunta
           </section>
         )
       ) : (
         <div className="text-2xl capitalize mb-4">
-          <p>Votacion finalizada</p>
+          <p className="text-2xl capitalize font-bold p-4">
+            Votacion finalizada
+          </p>
           <button
             type="button"
             className="text-center bg-red-900  rounded-3xl  mb-4 w-full text-white capitalize hover:bg-red-700"

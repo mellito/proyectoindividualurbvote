@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable no-unused-expressions */
 import { useEffect, useState } from "react";
@@ -10,7 +11,7 @@ import ResultQuestion from "../../components/ResultQuestion";
 
 function Residence() {
   const [question, setQuestion] = useState("");
-  const [infoResidence, setInfoResidence] = useState();
+
   const [houseArray, setHouseArray] = useState();
   const [newQuestionStatus, setNewQuestionStatues] = useState(true);
   const [houseData, sethouseData] = useState({
@@ -24,7 +25,6 @@ function Residence() {
   const [dataVote, setDataVote] = useState();
   const [voteCode, setVoteCode] = useState("");
   const {
-    geOnetUrbanization,
     addHouse,
     useSweetAlert,
     realtimeCollectionCheck,
@@ -36,7 +36,6 @@ function Residence() {
   } = useAuth();
   const id = useParams();
   const oneResidence = async () => {
-    setInfoResidence(await geOnetUrbanization(id));
     await realtimeCollectionCheck(id, setHouseArray);
     if (localStorage.code) {
       setVoteCode(localStorage.getItem("code"));
@@ -154,8 +153,16 @@ function Residence() {
 
   const handleSubmitQuestion = async (e) => {
     e.preventDefault();
+    if (!question) {
+      return useSweetAlert(
+        "ERROR",
+        "no puedes enviar una pregunta vacia",
+        "error",
+      );
+    }
     await addquestion(voteCode, question);
     setNewQuestionStatues(false);
+    return null;
   };
 
   const handleNewQuestion = () => {
@@ -168,9 +175,7 @@ function Residence() {
       <SideBarNavegation />
       <section className="h-screen grid grid-cols-3 w-full ">
         <div className=" h-full grid place-items-center overflow-y-auto">
-          {infoResidence && (
-            <UrbanizationCard urbanizationData={infoResidence} />
-          )}
+          {houseArray && <UrbanizationCard urbanizationData={houseArray} />}
           <article className="text-center ">
             <h1 className="uppercase font-bold">Crear casa</h1>
             <form onSubmit={handleSubmit}>
@@ -291,58 +296,49 @@ function Residence() {
             terminar votacion
           </button>
         </div>
-        <section className="font-bold items-center text-center  h-screen p-4">
+        <section className=" text-center  h-screen p-4">
           <article>
             <p className="uppercase " />
             {voteCode ? (
-              <form onSubmit={handleSubmitQuestion}>
-                {!newQuestionStatus ? (
-                  <p className="uppercase text-2xl">{question}</p>
-                ) : (
-                  <>
-                    <section className="flex flex-col justify-between item ">
-                      <label htmlFor="email" className="font-bold mb-2">
-                        PREGUNTA
-                        <input
-                          className="text-center border-2 border-gray-400 rounded-3xl  block  w-full bg-inherit"
-                          type="text"
-                          name="question"
-                          placeholder="crear pregunta "
-                          value={question}
-                          onChange={(e) => {
-                            setQuestion(e.target.value);
-                          }}
-                        />
-                      </label>
-                    </section>
+              newQuestionStatus ? (
+                <form onSubmit={handleSubmitQuestion}>
+                  <label htmlFor="email" className="font-bold mb-2">
+                    PREGUNTA
+                    <input
+                      className="text-center border-2 border-gray-400 rounded-3xl  block  w-full bg-inherit mb-2"
+                      type="text"
+                      name="question"
+                      placeholder="crear pregunta "
+                      value={question}
+                      onChange={(e) => {
+                        setQuestion(e.target.value);
+                      }}
+                    />
+                  </label>
 
-                    <button
-                      type="submit"
-                      className="text-center bg-blue-900  rounded-3xl p-1  mb-4 w-full text-white capitalize hover:bg-blue-700"
-                    >
-                      crear pregunta
-                    </button>
-                  </>
-                )}
-              </form>
+                  <button
+                    type="submit"
+                    className="text-center bg-blue-900  rounded-3xl p-1  mb-4 w-full text-white capitalize hover:bg-blue-700"
+                  >
+                    crear pregunta
+                  </button>
+                </form>
+              ) : (
+                <>
+                  <ResultQuestion dataVote={dataVote} />
+                  <button
+                    type="button"
+                    className="text-center bg-red-900  rounded-3xl p-1 mb-4 w-full text-white capitalize hover:bg-red-700"
+                    onClick={handleNewQuestion}
+                  >
+                    Finalizar pregunta
+                  </button>
+                </>
+              )
             ) : (
-              <p>votacion no iniciada</p>
-            )}
-          </article>
-          <article>
-            {!newQuestionStatus ? (
-              <>
-                <ResultQuestion dataVote={dataVote} />
-                <button
-                  type="button"
-                  className="text-center bg-red-900  rounded-3xl p-1 mb-4 w-full text-white capitalize hover:bg-red-700"
-                  onClick={handleNewQuestion}
-                >
-                  Finalizar pregunta
-                </button>
-              </>
-            ) : (
-              <p className="uppercase">esperando pregunta</p>
+              <p className="text-2xl capitalize font-bold ">
+                Votacion no iniciada
+              </p>
             )}
           </article>
         </section>
