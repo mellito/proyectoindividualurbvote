@@ -25,6 +25,9 @@ function VoteLobby() {
   const handleSubmit = async (e) => {
     try {
       e.preventDefault();
+      if (!user.code) {
+        return useSweetAlert("error", "codigo no puede estar vacio", "error");
+      }
       const voteInformation = await checkVoteHouse(user.code);
       if (voteInformation) {
         const { houseVoteActive } = voteInformation;

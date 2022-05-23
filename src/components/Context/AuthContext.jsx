@@ -130,17 +130,6 @@ export function AuthProvider({ children }) {
     }
   };
 
-  const geOnetUrbanization = async (id) => {
-    try {
-      const docRef = doc(fireStore, sessionUser.email, id.id);
-      const docVaidation = await getDoc(docRef);
-
-      return docVaidation.data();
-    } catch (error) {
-      return useSweetAlert("Fibase error", error.message, "error");
-    }
-  };
-
   const addHouse = async (id, data) => {
     const { housenumber } = data;
     try {
@@ -337,7 +326,7 @@ export function AuthProvider({ children }) {
     createUrbanization,
     fileHandler,
     getAllUrbanization,
-    geOnetUrbanization,
+
     addHouse,
     realtimeCollectionCheck,
     createVote,
