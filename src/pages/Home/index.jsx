@@ -7,6 +7,7 @@ import {
   REGISTER_ROUTE,
   LOBBY_ROUTE,
   RECOVERY_ROUTE,
+  VOTE_LOBBY,
 } from "../../components/Constans/Routes";
 import RedirecTemplate from "../../components/RedirecTemplate";
 
@@ -15,7 +16,7 @@ function Home() {
     email: "",
     password: "",
   });
-  const { login, useSweetAlert, googleLogin, } = useAuth();
+  const { login, useSweetAlert, googleLogin } = useAuth();
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -126,6 +127,12 @@ function Home() {
           nameContent="No te has registrado?"
           goLink={REGISTER_ROUTE}
         />
+        <Link
+          to={VOTE_LOBBY}
+          className="block  text-blue-900 font-semibold mt-4 text-3xl capitalize"
+        >
+          vota aqui
+        </Link>
       </article>
     </TemplateBase>
   );

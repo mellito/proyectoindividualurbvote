@@ -8,8 +8,8 @@ function UrbanizationCard({ urbanizationData }) {
   return (
     <Link to={`${RESIDENCE}/${identification}`}>
       <div className="text-center">
-        <p> {uniName}</p>
-        <img src={photo} alt={uniName} className="w-72 h-60 object-fill" />
+        <p className="font-bold capitalize"> {uniName}</p>
+        <img src={photo} alt={uniName} className="w-96 h-80 object-fill" />
         <section className="px-1">
           <p>Correo: {email}</p>
           <p>Telefono: {phone}</p>
@@ -19,19 +19,14 @@ function UrbanizationCard({ urbanizationData }) {
   );
 }
 
-UrbanizationCard.defaultProps = {
-  photo: "",
-  email: "",
-  uniName: "",
-  phone: "",
-};
-
 UrbanizationCard.propTypes = {
-  urbanizationData: PropTypes.objectOf(PropTypes.string).isRequired,
-  photo: PropTypes.string,
-  email: PropTypes.string,
-  uniName: PropTypes.string,
-  phone: PropTypes.string,
+  urbanizationData: PropTypes.shape({
+    uniName: PropTypes.string,
+    identification: PropTypes.string,
+    phone: PropTypes.string,
+    email: PropTypes.string,
+    photo: PropTypes.string,
+  }).isRequired,
 };
 
 export default UrbanizationCard;

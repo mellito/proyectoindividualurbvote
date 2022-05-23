@@ -1,9 +1,10 @@
-import PropTypes, { string } from "prop-types";
+/* eslint-disable no-unused-expressions */
+import PropTypes from "prop-types";
 import { useParams } from "react-router-dom";
 import { useAuth } from "../Context/AuthContext";
 
 function CardResidence({ house }) {
-  const { updateActiveHouse } = useAuth();
+  const { updateActiveHouse, useSweetAlert } = useAuth();
   const { housenumber, votacion, name, phone } = house;
   const id = useParams();
 
@@ -21,7 +22,13 @@ function CardResidence({ house }) {
         name="Paneer"
         checked={votacion}
         onChange={() => {
-          updateActiveHouse(id.id, housenumber);
+          localStorage.code
+            ? useSweetAlert(
+                "error",
+                "no puedes modificar la lista de votantes cuando una votacion esta iniciada",
+                "error",
+              )
+            : updateActiveHouse(id.id, housenumber);
         }}
       />
     </div>
@@ -29,10 +36,12 @@ function CardResidence({ house }) {
 }
 
 CardResidence.propTypes = {
-  house: PropTypes.arrayOf(string).isRequired,
-  housenumber: PropTypes.string.isRequired,
-  name: PropTypes.string.isRequired,
-  votacion: PropTypes.bool.isRequired,
+  house: PropTypes.shape({
+    housenumber: PropTypes.string,
+    votacion: PropTypes.bool,
+    name: PropTypes.string,
+    phone: PropTypes.string,
+  }).isRequired,
 };
 
 export default CardResidence;
