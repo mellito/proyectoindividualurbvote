@@ -6,7 +6,7 @@ import { HOME_ROUTE } from "../Constans/Routes";
 
 function ProtectedRoute({ children }) {
   const { sessionUser, loading } = useAuth();
-  if (loading) return <h1>loading</h1>;
+  if (loading) return <h1>cargando</h1>;
   if (!sessionUser) return <Navigate to={HOME_ROUTE} />;
   return children;
 }
