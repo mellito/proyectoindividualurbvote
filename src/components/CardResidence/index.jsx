@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-expressions */
-import PropTypes, { string } from "prop-types";
+import PropTypes from "prop-types";
 import { useParams } from "react-router-dom";
 import { useAuth } from "../Context/AuthContext";
 
@@ -36,10 +36,12 @@ function CardResidence({ house }) {
 }
 
 CardResidence.propTypes = {
-  house: PropTypes.arrayOf(string).isRequired,
-  housenumber: PropTypes.string.isRequired,
-  name: PropTypes.string.isRequired,
-  votacion: PropTypes.bool.isRequired,
+  house: PropTypes.shape({
+    housenumber: PropTypes.string,
+    votacion: PropTypes.bool,
+    name: PropTypes.string,
+    phone: PropTypes.string,
+  }).isRequired,
 };
 
 export default CardResidence;

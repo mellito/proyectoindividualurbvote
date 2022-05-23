@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-syntax */
 /* eslint-disable no-unused-expressions */
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
@@ -30,6 +31,8 @@ function Residence() {
     createVote,
     addquestion,
     realtimeCollectionVote,
+    resetVoteActive,
+    endVote,
   } = useAuth();
   const id = useParams();
   const oneResidence = async () => {
@@ -103,6 +106,14 @@ function Residence() {
         }
       }
 
+      if (!Object.values(houseVoteActive).length) {
+        return useSweetAlert(
+          "error",
+          "lista de participantes no puede estar vacia",
+          "error",
+        );
+      }
+
       const resultCode = [];
       const characters =
         "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -114,18 +125,20 @@ function Residence() {
       if (!localStorage.code) {
         localStorage.setItem("code", resultCode.join(""));
         setVoteCode(localStorage.getItem("code"));
+
         createVote(
           { houseVoteActive, questions: {}, idUrb: id.id, state: true },
           resultCode.join(""),
           id.id,
         );
       }
+      return null;
     } catch (error) {
-      useSweetAlert("error", error.message, "error");
+      return useSweetAlert("error", error.message, "error");
     }
   };
 
-  const endVote = () => {
+  const handleEndVote = () => {
     if (!newQuestionStatus) {
       return useSweetAlert(
         "Error",
@@ -133,6 +146,7 @@ function Residence() {
         "error",
       );
     }
+    endVote(voteCode, id.id);
     localStorage.removeItem("code");
     setVoteCode("");
     return null;
@@ -146,6 +160,7 @@ function Residence() {
 
   const handleNewQuestion = () => {
     setQuestion("");
+    resetVoteActive(dataVote, voteCode);
     setNewQuestionStatues(true);
   };
   return (
@@ -237,7 +252,7 @@ function Residence() {
           <section className="grid grid-cols-3 gap-4 mb-4 ">
             {houseArray &&
               Object.values(houseArray.house).map((house) => (
-                <CardResidence house={house} />
+                <CardResidence house={house} key={house.cc} />
               ))}
           </section>
           {voteCode && (
@@ -270,7 +285,7 @@ function Residence() {
                 ? "text-center bg-red-900  rounded-3xl p-1 mb-4 w-full text-white capitalize hover:bg-red-700"
                 : "text-center bg-gray-700  rounded-3xl p-1 mb-4 w-full text-white capitalize "
             }
-            onClick={endVote}
+            onClick={handleEndVote}
             disabled={!voteCode}
           >
             terminar votacion

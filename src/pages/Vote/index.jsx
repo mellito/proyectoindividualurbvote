@@ -1,19 +1,19 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-disable no-nested-ternary */
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../../components/Context/AuthContext";
+import ResultQuestion from "../../components/ResultQuestion";
+import { HOME_ROUTE } from "../../components/Constans/Routes";
 
 function Vote() {
   const { code, house } = useParams();
-  console.log(house);
   const [voteCollection, setVoteCollection] = useState();
-
-  const { realtimeCollectionVote } = useAuth();
+  const navigate = useNavigate();
+  const { realtimeCollectionVote, addVote } = useAuth();
   const dataActive = async () => {
     await realtimeCollectionVote(setVoteCollection, code);
   };
-
   useEffect(() => {
     dataActive();
   }, []);
@@ -21,34 +21,63 @@ function Vote() {
     <div className="grid place-content-center h-screen w-full text-center">
       {voteCollection && voteCollection.state ? (
         Object.keys(voteCollection.questions).length > 0 ? (
-          <>
-            <p className="text-2xl capitalize mb-4">
-              {
-                voteCollection.questions[
-                  Object.keys(voteCollection.questions).length
-                ].questionToAdd
-              }
-            </p>
-            <button
-              type="button"
-              className="text-center bg-blue-900  rounded-3xl p-1  mb-4 w-full text-white capitalize hover:bg-blue-700"
-            >
-              si
-            </button>
-            <button
-              type="button"
-              className="text-center bg-red-900  rounded-3xl p-1 mb-4 w-full text-white capitalize hover:bg-red-700"
-            >
-              no
-            </button>
-          </>
+          <div>
+            {voteCollection.questions[
+              Object.keys(voteCollection.questions).length
+            ].state ? (
+              voteCollection.houseVoteActive[house].votacion ? (
+                <div>
+                  <p className="text-2xl capitalize mb-4">
+                    {
+                      voteCollection.questions[
+                        Object.keys(voteCollection.questions).length
+                      ].questionToAdd
+                    }
+                  </p>
+                  <button
+                    type="button"
+                    className="text-center bg-blue-900  rounded-3xl p-1  mb-4 w-full text-white capitalize hover:bg-blue-700"
+                    onClick={() => {
+                      addVote("yes", house, code, voteCollection);
+                    }}
+                  >
+                    si
+                  </button>
+                  <button
+                    type="button"
+                    className="text-center bg-red-900  rounded-3xl p-1 mb-4 w-full text-white capitalize hover:bg-red-700"
+                    onClick={() => {
+                      addVote("not", house, code, voteCollection);
+                    }}
+                  >
+                    no
+                  </button>
+                </div>
+              ) : (
+                <ResultQuestion dataVote={voteCollection} />
+              )
+            ) : (
+              <>Pregunta finalizada esperando nueva pregunta</>
+            )}
+          </div>
         ) : (
           <section className="text-2xl capitalize mb-4">
-            Esperando nueva pregunta
+            pregunta sin creada, esperando nueva pregunta
           </section>
         )
       ) : (
-        <div className="text-2xl capitalize mb-4">Votacion finalizada</div>
+        <div className="text-2xl capitalize mb-4">
+          <p>Votacion finalizada</p>
+          <button
+            type="button"
+            className="text-center bg-red-900  rounded-3xl  mb-4 w-full text-white capitalize hover:bg-red-700"
+            onClick={() => {
+              navigate(HOME_ROUTE);
+            }}
+          >
+            Salir
+          </button>
+        </div>
       )}
     </div>
   );

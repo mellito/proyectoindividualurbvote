@@ -3,19 +3,22 @@ import PropTypes from "prop-types";
 
 function ResultQuestion({ dataVote }) {
   const { houseVoteActive, questions } = dataVote;
+
+  const housevoting = Object.values(houseVoteActive).filter(
+    (vote) => vote.votacion === true,
+  );
+  const currentQuestion = questions[Object.keys(questions).length];
+
   return (
     <div>
-      <p className="uppercase">Resultado</p>
-      propietarios votando: {Object.keys(houseVoteActive).length}
-      <p>
-        a favor
-        {questions[Object.keys(questions).length] &&
-          questions[Object.keys(questions).length].yes.length}
+      <p className="uppercase ">Resultado</p>
+      <p>Reguistrados para votar: {Object.values(houseVoteActive).length}</p>
+      <p>faltan por votar:{housevoting.length}</p>
+      <p className="capitalize">
+        a favor: <span>{currentQuestion && currentQuestion.yes.length}</span>
       </p>
-      <p>
-        encontra
-        {questions[Object.keys(questions).length] &&
-          questions[Object.keys(questions).length].not.length}
+      <p className="capitalize">
+        encontra: <span> {currentQuestion && currentQuestion.not.length}</span>
       </p>
     </div>
   );
@@ -24,5 +27,16 @@ function ResultQuestion({ dataVote }) {
 export default ResultQuestion;
 
 ResultQuestion.propTypes = {
-  dataVote: PropTypes.objectOf(PropTypes.string).isRequired,
+  dataVote: PropTypes.shape({
+    houseVoteActive: PropTypes.oneOfType([
+      PropTypes.string,
+      PropTypes.bool,
+      PropTypes.object,
+    ]),
+    questions: PropTypes.oneOfType([
+      PropTypes.string,
+      PropTypes.bool,
+      PropTypes.object,
+    ]),
+  }).isRequired,
 };

@@ -20,7 +20,13 @@ function UrbanizationCard({ urbanizationData }) {
 }
 
 UrbanizationCard.propTypes = {
-  urbanizationData: PropTypes.objectOf(PropTypes.string).isRequired,
+  urbanizationData: PropTypes.shape({
+    uniName: PropTypes.string,
+    identification: PropTypes.string,
+    phone: PropTypes.string,
+    email: PropTypes.string,
+    photo: PropTypes.string,
+  }).isRequired,
 };
 
 export default UrbanizationCard;

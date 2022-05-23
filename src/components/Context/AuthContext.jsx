@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-syntax */
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import {
   createUserWithEmailAndPassword,
@@ -235,9 +236,97 @@ export function AuthProvider({ children }) {
     }
   };
 
+  const resetVoteActive = async (listVoteHouse, code) => {
+    try {
+      const { houseVoteActive, questions } = listVoteHouse;
+      let houseRestObj = {};
+
+      for (const restStateHouseVote in houseVoteActive) {
+        if (listVoteHouse) {
+          houseRestObj = {
+            ...houseRestObj,
+            [restStateHouseVote]: {
+              ...houseVoteActive[restStateHouseVote],
+              votacion: true,
+            },
+          };
+        }
+      }
+
+      const docRef = doc(fireStore, "vote", code);
+      return updateDoc(docRef, {
+        houseVoteActive: houseRestObj,
+        questions: {
+          ...questions,
+          [Object.keys(questions).length]: {
+            ...questions[Object.keys(questions).length],
+            state: false,
+          },
+        },
+      });
+    } catch (error) {
+      return useSweetAlert("error", error.message, "error");
+    }
+  };
+
+  const addVote = async (choice, house, code, listVoteHouse) => {
+    try {
+      const { questions, houseVoteActive } = listVoteHouse;
+
+      const docRef = doc(fireStore, "vote", code);
+      updateDoc(docRef, {
+        questions: {
+          ...questions,
+          [Object.keys(questions).length]: {
+            ...questions[Object.keys(questions).length],
+            [choice]:
+              questions[Object.keys(questions).length][choice].concat(house),
+          },
+        },
+        houseVoteActive: {
+          ...houseVoteActive,
+          [house]: { ...houseVoteActive[house], votacion: false },
+        },
+      });
+      return null;
+    } catch (error) {
+      return useSweetAlert("error", error.message, "error");
+    }
+  };
+
+  const endVote = async (code, id) => {
+    try {
+      const docRef = doc(fireStore, sessionUser.email, id);
+      const voteRef = doc(fireStore, "vote", code);
+      const docData = await getDoc(docRef);
+
+      const { house } = docData.data();
+
+      let houseRestObj = {};
+
+      for (const restStateHouseVote in house) {
+        if (house) {
+          houseRestObj = {
+            ...houseRestObj,
+            [restStateHouseVote]: {
+              ...house[restStateHouseVote],
+              votacion: false,
+            },
+          };
+        }
+      }
+      await updateDoc(voteRef, { state: false });
+      await updateDoc(docRef, { house: houseRestObj });
+      return null;
+    } catch (error) {
+      return useSweetAlert("error", error.message, "error");
+    }
+  };
+
   const data = useMemo(() => ({
     signup,
     login,
+    endVote,
     sessionUser,
     logOut,
     loading,
@@ -256,6 +345,8 @@ export function AuthProvider({ children }) {
     addquestion,
     realtimeCollectionVote,
     checkVoteHouse,
+    resetVoteActive,
+    addVote,
   }));
   return <authContext.Provider value={data}>{children}</authContext.Provider>;
 }
