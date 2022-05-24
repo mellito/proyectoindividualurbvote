@@ -17,22 +17,22 @@ function SideBarNavegation() {
     <nav className="bg-blue-700 text-white h-screen w-60 flex flex-col justify-between items-center py-4">
       <h1 className="uppercase">Panel UrbVote</h1>
 
-      <section className="text-center">
+      <section className="text-center uppercase">
         <Link
           to={LOBBY_ROUTE}
-          className="capitalize hover:text-gray-400 font-bold block mb-4"
+          className=" hover:text-gray-400 font-bold block mb-4"
         >
           inicio
         </Link>
         <Link
           to={CREATE_RESIDENCE}
-          className="capitalize hover:text-gray-400 font-bold block mb-4"
+          className=" hover:text-gray-400 font-bold block mb-4"
         >
           Crear unidad
         </Link>
       </section>
 
-      <section className="flex flex-col justify-between items-center h-52">
+      <section className="flex flex-col justify-between items-center h-52 uppercase">
         <p className="capitalize"> {displayName}</p>
         <img
           src={photoURL}
@@ -42,7 +42,7 @@ function SideBarNavegation() {
         <button
           type="button"
           onClick={handleLogOut}
-          className="   hover:text-gray-400 capitalize font-semibold"
+          className="   hover:text-gray-400 uppercase  font-semibold"
         >
           Cerrar sesion
         </button>

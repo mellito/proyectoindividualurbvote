@@ -254,12 +254,17 @@ function Residence() {
           <h1 className="uppercase font-bold mb-4 text-center">
             casas registradas
           </h1>
-          <section className="grid grid-cols-3 gap-4 mb-4 ">
-            {houseArray &&
-              Object.values(houseArray.house).map((house) => (
-                <CardResidence house={house} key={house.cc} />
-              ))}
+          <section className="flex items-center border-b-2 border-black mb-2 font-bold uppercase">
+            <p className="w-1/4 text-center ">Nombre</p>
+            <p className="w-1/4 text-center">Casa</p>
+            <p className="w-1/4 text-center">Celular</p>
+            <p className="w-1/4 text-center">Check</p>
           </section>
+          {houseArray &&
+            Object.values(houseArray.house).map((house) => (
+              <CardResidence house={house} key={house.cc} />
+            ))}
+
           {voteCode && (
             <>
               <p className="text-center mb-2 font-bold uppercase">
@@ -328,7 +333,7 @@ function Residence() {
                   <ResultQuestion dataVote={dataVote} />
                   <button
                     type="button"
-                    className="text-center bg-red-900  rounded-3xl p-1 mb-4 w-full text-white capitalize hover:bg-red-700"
+                    className="text-center bg-red-900  rounded-3xl p-1 mt-4 w-full text-white capitalize hover:bg-red-700"
                     onClick={handleNewQuestion}
                   >
                     Finalizar pregunta
@@ -336,7 +341,7 @@ function Residence() {
                 </>
               )
             ) : (
-              <p className="text-2xl capitalize font-bold ">
+              <p className="text-xl uppercase font-bold ">
                 Votacion no iniciada
               </p>
             )}

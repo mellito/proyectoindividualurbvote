@@ -9,14 +9,13 @@ function CardResidence({ house }) {
   const id = useParams();
 
   return (
-    <div className="flex items-center gap-1 border-b-2 border-black">
-      <section className="w-32 capitalize ">
-        <p>{name}</p>
-        <p>{housenumber}</p>
-        <p>{phone}</p>
-      </section>
+    <div className="flex items-center border-b-2 border-black mb-2 ">
+      <p className="w-1/4 text-center capitalize">{name}</p>
+      <p className="w-1/4 text-center">{housenumber}</p>
+      <p className="w-1/4 text-center">{phone}</p>
 
       <input
+        className="w-1/4 text-center"
         type="checkbox"
         id="votation"
         name="Paneer"

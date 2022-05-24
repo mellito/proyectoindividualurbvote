@@ -1,27 +1,46 @@
 import React from "react";
 import PropTypes from "prop-types";
+import { Bar } from "react-chartjs-2";
+// eslint-disable-next-line no-unused-vars
+import { Chart as ChartJS } from "chart.js/auto";
 
 function ResultQuestion({ dataVote }) {
   const { houseVoteActive, questions } = dataVote;
-
   const housevoting = Object.values(houseVoteActive).filter(
     (vote) => vote.votacion === true,
   );
   const currentQuestion = questions[Object.keys(questions).length];
+
+  const data = {
+    labels: ["SI", "NO"],
+    datasets: [
+      {
+        data: [
+          currentQuestion && currentQuestion.yes.length,
+          currentQuestion && currentQuestion.not.length,
+        ],
+        backgroundColor: ["rgba(15, 0, 252, 1)", "rgba(255, 0, 0, 1)"],
+        borderColor: ["rgba(255, 99, 132, 1)", "rgba(54, 162, 235, 1)"],
+        borderWidth: 1,
+      },
+    ],
+  };
+
+  const options = {
+    responsive: true,
+    plugins: {
+      legend: {
+        display: false,
+      },
+    },
+  };
+
   return (
-    <div className="text-xl ">
-      <p className="uppercase  text-3xl font-bold">
-        {currentQuestion && currentQuestion.questionToAdd}
-      </p>
-      <p className="uppercase ">Resultado</p>
-      <p>Reguistrados para votar: {Object.values(houseVoteActive).length}</p>
-      <p>por votar:{housevoting.length}</p>
-      <p className="capitalize">
-        a favor: <span>{currentQuestion && currentQuestion.yes.length}</span>
-      </p>
-      <p className="capitalize">
-        encontra: <span> {currentQuestion && currentQuestion.not.length}</span>
-      </p>
+    <div className="text-lg capitalize ">
+      <p>Registrados para votar: {Object.values(houseVoteActive).length}</p>
+      <p>por votar: {housevoting.length}</p>
+      <p>{currentQuestion && currentQuestion.questionToAdd}</p>
+      <Bar data={data} options={options} />
     </div>
   );
 }
