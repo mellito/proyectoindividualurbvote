@@ -271,7 +271,7 @@ function Residence() {
                 votacion iniciada
               </p>
               <h3 className="text-center mb-2 font-bold">
-                <p>https://urbvote.vercel.app/vote/</p>
+                <p>https://urbvote.vercel.app/votelobby</p>
                 <p>codigo: {voteCode}</p>
               </h3>
             </>
