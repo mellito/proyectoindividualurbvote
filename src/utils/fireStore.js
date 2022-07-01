@@ -1,4 +1,3 @@
-/* eslint-disable no-restricted-syntax */
 import {
   doc,
   setDoc,
@@ -130,18 +129,13 @@ export const resetVoteActive = async (listVoteHouse, code) => {
   try {
     const { houseVoteActive, questions } = listVoteHouse;
     let houseRestObj = {};
-
-    for (const restStateHouseVote in houseVoteActive) {
-      if (listVoteHouse) {
-        houseRestObj = {
-          ...houseRestObj,
-          [restStateHouseVote]: {
-            ...houseVoteActive[restStateHouseVote],
-            votacion: true,
-          },
-        };
-      }
-    }
+    Object.values(houseVoteActive).forEach((houseActive) => {
+      houseRestObj = {
+        ...houseRestObj,
+        [houseActive.housenumber]: houseActive,
+        votacion: true,
+      };
+    });
 
     const docRef = doc(fireStore, "vote", code);
     return updateDoc(docRef, {
@@ -193,18 +187,14 @@ export const endVote = async (code, id, sessionUser) => {
     const { house } = docData.data();
 
     let houseRestObj = {};
+    Object.values(house).forEach((houseEnd) => {
+      houseRestObj = {
+        ...houseRestObj,
+        [houseEnd.housenumber]: houseEnd,
+        votacion: false,
+      };
+    });
 
-    for (const restStateHouseVote in house) {
-      if (house) {
-        houseRestObj = {
-          ...houseRestObj,
-          [restStateHouseVote]: {
-            ...house[restStateHouseVote],
-            votacion: false,
-          },
-        };
-      }
-    }
     await updateDoc(voteRef, { state: false });
     await updateDoc(docRef, { house: houseRestObj });
     return null;

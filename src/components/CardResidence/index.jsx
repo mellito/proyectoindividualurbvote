@@ -2,11 +2,13 @@
 import PropTypes from "prop-types";
 import { useParams } from "react-router-dom";
 import { useAuth } from "../Context/AuthContext";
+import { updateActiveHouse } from "../../utils/fireStore";
+import useSweetAlert from "../../utils/useSweetAlert";
 
 function CardResidence({ house }) {
-  const { updateActiveHouse, useSweetAlert } = useAuth();
+  const { sessionUser } = useAuth();
   const { housenumber, votacion, name, phone } = house;
-  const id = useParams();
+  const { id } = useParams();
 
   return (
     <div className="flex items-center border-b-2 border-black mb-2 ">
@@ -27,7 +29,7 @@ function CardResidence({ house }) {
                 "no puedes modificar la lista de votantes cuando una votacion esta iniciada",
                 "error",
               )
-            : updateActiveHouse(id.id, housenumber);
+            : updateActiveHouse(id, housenumber, sessionUser);
         }}
       />
     </div>
