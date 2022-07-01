@@ -80,7 +80,6 @@ function Home() {
           <FcGoogle className="inline text-xl" />
           <span className="ml-1 font-bold"> Iniciar sesión con google</span>
         </button>
-        {/* eslint-disable-next-line no-octal-escape */}
         <p className="before:content-['---------------------------'] after:content-['---------------------------'] text-sm text-gray-600 mb-4">
           O inicia sesión con correo
         </p>
