@@ -3,11 +3,12 @@ import { useNavigate } from "react-router-dom";
 import { REGISTER_ROUTE, HOME_ROUTE } from "../../components/Constans/Routes";
 import TemplateBase from "../../components/TemplateBase";
 import RedirecTemplate from "../../components/RedirecTemplate";
-import { useAuth } from "../../components/Context/AuthContext";
+import useSweetAlert from "../../utils/useSweetAlert";
+import { resetPassword } from "../../utils/auth";
 
 function Recovery() {
+  const navigate = useNavigate();
   const [userEmail, setUserEmail] = useState();
-  const { useSweetAlert, resetPassword } = useAuth();
 
   const handleResetPassword = async () => {
     if (!userEmail) {
@@ -17,17 +18,14 @@ function Recovery() {
         "error",
       );
     }
-    try {
-      await resetPassword(userEmail);
-      useSweetAlert(
-        "Recuperacion exitosa",
-        "se ha enviado un correo porfavor verifica tu bandeja o span ",
-        "success",
-      );
-      return useNavigate(HOME_ROUTE);
-    } catch (error) {
-      return useSweetAlert("Fibase error", error.message, "error");
-    }
+
+    await resetPassword(userEmail);
+    useSweetAlert(
+      "Recuperacion exitosa",
+      "se ha enviado un correo porfavor verifica tu bandeja o span ",
+      "success",
+    );
+    return navigate(HOME_ROUTE);
   };
   return (
     <TemplateBase>

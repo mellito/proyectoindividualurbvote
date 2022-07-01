@@ -2,12 +2,13 @@ import { useState, useEffect } from "react";
 import SideBarNavegation from "../../components/SideBarNavegation";
 import { useAuth } from "../../components/Context/AuthContext";
 import UrbanizationCard from "../../components/UrbanizationCard";
+import { getAllUrbanization } from "../../utils/fireStore";
 
 function Lobby() {
-  const { getAllUrbanization } = useAuth();
+  const { sessionUser } = useAuth();
   const [listUrbData, setListUrbData] = useState();
   const getAllUrbList = async () => {
-    setListUrbData(await getAllUrbanization());
+    setListUrbData(await getAllUrbanization(sessionUser));
   };
 
   useEffect(() => {

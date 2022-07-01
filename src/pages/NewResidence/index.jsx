@@ -1,9 +1,12 @@
 import { useState } from "react";
 import SideBarNavegation from "../../components/SideBarNavegation";
 import { useAuth } from "../../components/Context/AuthContext";
+import useSweetAlert from "../../utils/useSweetAlert";
+import fileHandler from "../../utils/storage";
+import { createUrbanization } from "../../utils/fireStore";
 
 function NewResidence() {
-  const { useSweetAlert, fileHandler, createUrbanization } = useAuth();
+  const { sessionUser } = useAuth();
   const [urbanizationData, setUrbanizationData] = useState({
     uniName: "",
     address: "",
@@ -12,7 +15,6 @@ function NewResidence() {
     phone: "",
     photo: "",
   });
-
   const [storagePhotoEvent, setStoragePhotoEvent] = useState();
 
   const handleChange = (e) => {
@@ -42,11 +44,15 @@ function NewResidence() {
     }
 
     try {
-      const photo = await fileHandler(
+      const url = await fileHandler(
         storagePhotoEvent,
         urbanizationData.uniName,
       );
-      const newUrbanization = { ...urbanizationData, photo, house: {} };
+      const newUrbanization = {
+        ...urbanizationData,
+        photo: url,
+        house: {},
+      };
       setUrbanizationData({
         uniName: "",
         address: "",
@@ -55,7 +61,7 @@ function NewResidence() {
         phone: "",
         photo: "",
       });
-      createUrbanization(newUrbanization);
+      createUrbanization(newUrbanization, sessionUser);
       return useSweetAlert(
         "Creada",
         `urbanzacion ${newUrbanization.uniName} creada exitosamente`,
@@ -63,7 +69,7 @@ function NewResidence() {
       );
     } catch (error) {
       setUrbanizationData({});
-      return useSweetAlert("Error Google", error.message, "error");
+      return useSweetAlert("Error", error.message, "error");
     }
   };
   return (

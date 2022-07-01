@@ -9,6 +9,17 @@ import UrbanizationCard from "../../components/UrbanizationCard";
 import CardResidence from "../../components/CardResidence";
 import ResultQuestion from "../../components/ResultQuestion";
 
+import {
+  addHouse,
+  realtimeCollectionCheck,
+  createVote,
+  addquestion,
+  realtimeCollectionVote,
+  resetVoteActive,
+  endVote,
+} from "../../utils/fireStore";
+import useSweetAlert from "../../utils/useSweetAlert";
+
 function Residence() {
   const [question, setQuestion] = useState("");
 
@@ -24,19 +35,11 @@ function Residence() {
   });
   const [dataVote, setDataVote] = useState();
   const [voteCode, setVoteCode] = useState("");
-  const {
-    addHouse,
-    useSweetAlert,
-    realtimeCollectionCheck,
-    createVote,
-    addquestion,
-    realtimeCollectionVote,
-    resetVoteActive,
-    endVote,
-  } = useAuth();
-  const id = useParams();
+  const { sessionUser } = useAuth();
+  const { id } = useParams();
+
   const oneResidence = async () => {
-    await realtimeCollectionCheck(id, setHouseArray);
+    await realtimeCollectionCheck(id, setHouseArray, sessionUser);
     if (localStorage.code) {
       setVoteCode(localStorage.getItem("code"));
     }
@@ -70,7 +73,7 @@ function Residence() {
         "error",
       );
     }
-    addHouse(id, houseData);
+    addHouse(id, houseData, sessionUser);
     sethouseData({
       cc: "",
       name: "",
@@ -89,22 +92,19 @@ function Residence() {
   const createVoteLink = () => {
     try {
       let houseVoteActive = {};
-      // eslint-disable-next-line no-restricted-syntax
-      for (const houseNum in houseArray.house) {
-        if (houseArray.house[houseNum].votacion === true) {
-          const { votacion, housenumber, password } =
-            houseArray.house[houseNum];
+      Object.values(houseArray.house)
+        .filter((house) => house.votacion)
+        .map((house) => {
           houseVoteActive = {
             ...houseVoteActive,
-            [houseNum]: {
-              votacion,
-              housenumber,
-              password,
+            [house.housenumber]: {
+              housenumber: house.housenumber,
+              votacion: false,
+              password: house.password,
             },
           };
-        }
-      }
-
+          return null;
+        });
       if (!Object.values(houseVoteActive).length) {
         return useSweetAlert(
           "error",
@@ -126,9 +126,8 @@ function Residence() {
         setVoteCode(localStorage.getItem("code"));
 
         createVote(
-          { houseVoteActive, questions: {}, idUrb: id.id, state: true },
+          { houseVoteActive, questions: {}, idUrb: id, state: true },
           resultCode.join(""),
-          id.id,
         );
       }
       return null;
@@ -145,7 +144,7 @@ function Residence() {
         "error",
       );
     }
-    endVote(voteCode, id.id);
+    endVote(voteCode, id, sessionUser);
     localStorage.removeItem("code");
     setVoteCode("");
     return null;

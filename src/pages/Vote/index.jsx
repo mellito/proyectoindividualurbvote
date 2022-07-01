@@ -2,15 +2,15 @@
 /* eslint-disable no-nested-ternary */
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useAuth } from "../../components/Context/AuthContext";
 import ResultQuestion from "../../components/ResultQuestion";
 import { HOME_ROUTE } from "../../components/Constans/Routes";
+import { realtimeCollectionVote, addVote } from "../../utils/fireStore";
 
 function Vote() {
   const { code, house } = useParams();
   const [voteCollection, setVoteCollection] = useState();
   const navigate = useNavigate();
-  const { realtimeCollectionVote, addVote } = useAuth();
+
   const dataActive = async () => {
     await realtimeCollectionVote(setVoteCollection, code);
   };
