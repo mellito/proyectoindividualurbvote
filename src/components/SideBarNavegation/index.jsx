@@ -1,9 +1,11 @@
 import { Link } from "react-router-dom";
 import { useAuth } from "../Context/AuthContext";
 import { CREATE_RESIDENCE, LOBBY_ROUTE } from "../Constans/Routes";
+import { logOut } from "../../utils/auth";
+import useSweetAlert from "../../utils/useSweetAlert";
 
 function SideBarNavegation() {
-  const { sessionUser, logOut, useSweetAlert } = useAuth();
+  const { sessionUser } = useAuth();
   const { displayName, photoURL } = sessionUser;
 
   const handleLogOut = async () => {

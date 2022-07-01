@@ -7,10 +7,10 @@ import {
   HOME_ROUTE,
   VOTE,
 } from "../../components/Constans/Routes";
-import { useAuth } from "../../components/Context/AuthContext";
+import useSweetAlert from "../../utils/useSweetAlert";
+import { checkVoteHouse } from "../../utils/fireStore";
 
 function VoteLobby() {
-  const { checkVoteHouse, useSweetAlert } = useAuth();
   const [user, setUser] = useState({
     house: "",
     code: "",

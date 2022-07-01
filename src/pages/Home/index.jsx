@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { FcGoogle } from "react-icons/fc";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../../components/Context/AuthContext";
 import TemplateBase from "../../components/TemplateBase";
 import {
   REGISTER_ROUTE,
@@ -10,13 +9,15 @@ import {
   VOTE_LOBBY,
 } from "../../components/Constans/Routes";
 import RedirecTemplate from "../../components/RedirecTemplate";
+import useSweetAlert from "../../utils/useSweetAlert";
+import { googleLogin, login } from "../../utils/auth";
 
 function Home() {
   const [user, setUser] = useState({
     email: "",
     password: "",
   });
-  const { login, useSweetAlert, googleLogin } = useAuth();
+
   const navigate = useNavigate();
 
   const handleChange = (e) => {

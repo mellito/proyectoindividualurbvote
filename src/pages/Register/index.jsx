@@ -1,16 +1,17 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../components/Context/AuthContext";
 import TemplateBase from "../../components/TemplateBase";
 import { HOME_ROUTE } from "../../components/Constans/Routes";
 import RedirecTemplate from "../../components/RedirecTemplate";
+import useSweetAlert from "../../utils/useSweetAlert";
+import { signUp, updateUser } from "../../utils/auth";
 
 function Register() {
   const [user, setUser] = useState({
     email: "",
     password: "",
   });
-  const { signup, useSweetAlert, updateUser } = useAuth();
+
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -34,7 +35,7 @@ function Register() {
           "error",
         );
       }
-      await signup(user.email, user.password);
+      await signUp(user.email, user.password);
       await updateUser();
       useSweetAlert(
         "Login exitoso",
