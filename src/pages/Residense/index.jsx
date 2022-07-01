@@ -1,6 +1,5 @@
 /* eslint-disable no-nested-ternary */
-/* eslint-disable no-restricted-syntax */
-/* eslint-disable no-unused-expressions */
+
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import SideBarNavegation from "../../components/SideBarNavegation";
@@ -42,16 +41,13 @@ function Residence() {
     await realtimeCollectionCheck(id, setHouseArray, sessionUser);
     if (localStorage.code) {
       setVoteCode(localStorage.getItem("code"));
+      realtimeCollectionVote(setDataVote, localStorage.getItem("code"));
     }
   };
 
   useEffect(() => {
     oneResidence();
   }, []);
-
-  useEffect(() => {
-    voteCode && realtimeCollectionVote(setDataVote, voteCode);
-  }, [voteCode]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
