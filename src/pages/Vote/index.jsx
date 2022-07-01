@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-expressions */
 /* eslint-disable no-nested-ternary */
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";

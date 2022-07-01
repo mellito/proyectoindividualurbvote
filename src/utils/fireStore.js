@@ -132,8 +132,7 @@ export const resetVoteActive = async (listVoteHouse, code) => {
     Object.values(houseVoteActive).forEach((houseActive) => {
       houseRestObj = {
         ...houseRestObj,
-        [houseActive.housenumber]: houseActive,
-        votacion: true,
+        [houseActive.housenumber]: { ...houseActive, votacion: true },
       };
     });
 
@@ -190,8 +189,7 @@ export const endVote = async (code, id, sessionUser) => {
     Object.values(house).forEach((houseEnd) => {
       houseRestObj = {
         ...houseRestObj,
-        [houseEnd.housenumber]: houseEnd,
-        votacion: false,
+        [houseEnd.housenumber]: { ...houseEnd, votacion: false },
       };
     });
 

@@ -99,7 +99,7 @@ function Residence() {
             ...houseVoteActive,
             [house.housenumber]: {
               housenumber: house.housenumber,
-              votacion: false,
+              votacion: true,
               password: house.password,
             },
           };
